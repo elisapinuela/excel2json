@@ -1,22 +1,24 @@
 from os import environ, path
-import tkinter as tk
-from tkinter import filedialog
 import pandas as pd
 import json
+import argparse
 
 
-def main():
-    # Get the file to read
-    try:
-        file_path = environ['FILE_PATH']
-    except KeyError:
-        # Ask to select a file to open
-        root = tk.Tk()
-        root.withdraw()
-        file_path = filedialog.askopenfilename()
-    # Return if file_path is empty
+def main(file_path=None):
     if not file_path:
-        return -1
+        # Get the file to read
+        try:
+            file_path = environ['FILE_PATH']
+        except KeyError:
+            import tkinter as tk
+            from tkinter import filedialog
+            # Ask to select a file to open
+            root = tk.Tk()
+            root.withdraw()
+            file_path = filedialog.askopenfilename()
+        # Return if file_path is empty
+        if not file_path:
+            return -1
     # Get file name and file directory from file_path
     file_name, extension = path.splitext(path.basename(file_path))
     file_directory = path.dirname(file_path)
@@ -42,5 +44,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', type=str, help='An Excel file path to convert to JSON')
+    args = parser.parse_args()
+    arg_file_path = None
+    if args.file:
+        arg_file_path = args.file
+    main(arg_file_path)
 
